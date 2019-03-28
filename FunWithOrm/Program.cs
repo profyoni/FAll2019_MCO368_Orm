@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
@@ -12,39 +14,78 @@ namespace FunWithOrm
         public int StudentId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        public virtual ISet<Enrollment> CourseEnrollments { get; set; } = new HashSet<Enrollment>();
     }
-    class Person
+
+    class Course
     {
-        public int PersonId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public int CourseId { get; set; }
+        public string CourseName { get; set; }
+        public string CourseNumber { get; set; }
+
+        public virtual ISet<Enrollment> StudentEnrollments { get; set; } = new HashSet<Enrollment>();
+    }
+
+    class Enrollment
+    {
+        [Key, Column(Order = 0)]
+        public int StudentId { get; set; }
+        public virtual Student Student { get; set; }
+
+        [Key, Column(Order = 1)]
+        public int CourseId { get; set; }
+        public virtual Course Course { get; set; }
+
+        public int Year { get; set; }
+        public Semester Semester { get; set; }
+        public Grade Grade { get; set; }
+    }
+
+    enum Semester
+    {
+        None, Spring, Fall, Summer, PostPesach, Intersesion, 
+    }
+    enum Grade
+    {
+        None, A, B, C, D, F
     }
 
     class DataLayer : DbContext
     {
         public DbSet<Student> Students { get; set; }  // db Table
-        public DbSet<Person> Persons { get; set; }  // db Table
+        public DbSet<Course> Courses { get; set; }  // db Table
+        public DbSet<Enrollment> Enrollments { get; set; }  // db Table
     }
 
     class Program
     {
         static void Main(string[] args)
         {
-            Database.SetInitializer<DataLayer>(new DropCreateDatabaseIfModelChanges<DataLayer>());
-
-            DataLayer dal = new DataLayer();
+            Database.SetInitializer<DataLayer>(new DropCreateDatabaseAlways<DataLayer>());
             
+            DataLayer dal = new DataLayer();
+            dal.Configuration.ProxyCreationEnabled = true;
+            dal.Configuration.LazyLoadingEnabled = true;
             Console.WriteLine(dal.Students.Count());
            
-            var jb = new Student{FirstName = "Dovie", LastName = "bob"};
-            dal.Students.Add(jb);
+            var s = new Student{FirstName = "Moshe", LastName = "Ioffe"};
+            
+            var course = new Course{CourseName = "Advanced Topics in Garbage Collection", CourseNumber = "GC 507"};
+
+
+            s.CourseEnrollments.Add( new  Enrollment
+            {
+                Course = course,
+                Student = s,
+                Grade = Grade.A
+            });
+
+            dal.Students.Add(s);
 
             dal.SaveChanges();
 
-            foreach (var student in dal.Students.ToList().Where(s => s.LastName == Reverse(s.LastName)))
-            {
-                Console.WriteLine($"{student.StudentId,10}{student.FirstName,10}{student.LastName,10}");
-            }
+
 
             Console.ReadLine();
         }
