@@ -7,21 +7,24 @@ using System.Threading.Tasks;
 
 namespace FunWithOrm
 {
-    class Student
+    public class Student
     {
         public int StudentId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
     }
-    class Person
+    public class Person
     {
         public int PersonId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
     }
 
-    class DataLayer : DbContext
+    public class DataLayer : DbContext
     {
+        public DataLayer() { }
+        public DataLayer(string dbName) : base(dbName)
+        {}
         public DbSet<Student> Students { get; set; }  // db Table
         public DbSet<Person> Persons { get; set; }  // db Table
     }
