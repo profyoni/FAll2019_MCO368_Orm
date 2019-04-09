@@ -18,16 +18,21 @@ namespace FunWithOrm
         public virtual ISet<Enrollment> CourseEnrollments { get; set; } = new HashSet<Enrollment>();
     }
 
-    class Course
+    public class Course
     {
         public int CourseId { get; set; }
         public string CourseName { get; set; }
         public string CourseNumber { get; set; }
+    }
+    public class Person
+    {
+        public int PersonId { get; set; }
+        public string Name { get; set; }
 
         public virtual ISet<Enrollment> StudentEnrollments { get; set; } = new HashSet<Enrollment>();
     }
 
-    class Enrollment
+    public class Enrollment
     {
         [Key, Column(Order = 0)]
         public int StudentId { get; set; }
@@ -42,11 +47,11 @@ namespace FunWithOrm
         public Grade Grade { get; set; }
     }
 
-    enum Semester
+    public enum Semester
     {
         None, Spring, Fall, Summer, PostPesach, Intersesion, 
     }
-    enum Grade
+    public enum Grade
     {
         None, A, B, C, D, F
     }
