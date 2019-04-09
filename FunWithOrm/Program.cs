@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FunWithOrm
 {
-    class Student
+    public class Student
     {
         public int StudentId { get; set; }
         public string FirstName { get; set; }
@@ -51,8 +51,11 @@ namespace FunWithOrm
         None, A, B, C, D, F
     }
 
-    class DataLayer : DbContext
+    public class DataLayer : DbContext
     {
+        public DataLayer() { }
+        public DataLayer(string dbName) : base(dbName)
+        {}
         public DbSet<Student> Students { get; set; }  // db Table
         public DbSet<Course> Courses { get; set; }  // db Table
         public DbSet<Enrollment> Enrollments { get; set; }  // db Table
